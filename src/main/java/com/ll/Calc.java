@@ -2,41 +2,27 @@ package com.ll;
 
 public class Calc {
     public static int run(String expression) {
-        expression = expression.trim();
-
-        while (expression.contains("(")) {
-            int open = expression.lastIndexOf('(');
-            int close = expression.indexOf(')', open);
-            int value = evalFlat(expression.substring(open + 1, close));
-            expression = expression.substring(0, open) + value + expression.substring(close + 1);
+        if (expression.contains("+")) {
+            String[] bits = expression.split("\\s*\\+\\s*");
+            return sum(bits, 0);
         }
 
-        return evalFlat(expression);
+        String[] bits = expression.split("\\s*-\\s*");
+        int num1 = Integer.parseInt(bits[0].trim());
+        int num2 = Integer.parseInt(bits[1].trim());
+
+        return subtract(num1, num2);
     }
 
-    private static int evalFlat(String expression) {
-        String[] expressionBits = expression.trim().split("\\s+");
-        int result = Integer.parseInt(expressionBits[0]);
-
-        for (int i = 1; i < expressionBits.length; ) {
-            String op = expressionBits[i];
-            int num = Integer.parseInt(expressionBits[i + 1]);
-            i += 2;
-
-            while (i < expressionBits.length && "*".equals(expressionBits[i])) {
-                num *= Integer.parseInt(expressionBits[i + 1]);
-                i += 2;
-            }
-
-            if ("+".equals(op)) {
-                result += num;
-            } else if ("-".equals(op)) {
-                result -= num;
-            } else {
-                result *= num;
-            }
-        }
-
-        return result;
+    private static int sum(String[] bits, int idx) {
+        if (idx == bits.length) return 0;
+        return Integer.parseInt(bits[idx].trim()) + sum(bits, idx + 1);
     }
+
+    private static int subtract(int num1, int num2) {
+        if (num2 == 0) return num1;
+        if (num2 > 0) return subtract(num1 - 1, num2 - 1);
+        return subtract(num1 + 1, num2 + 1);
+    }
+
 }
